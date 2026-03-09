@@ -15,17 +15,27 @@ export default function Building({ position, height, repo }) {
 
   const [hovered,setHovered] = useState(false)
   const ref = useRef()
+  const windowRef = useRef([])
 
   const style = languageStyles[repo.language] || languageStyles.default
   const stars = repo.stargazers_count || 0
-
   const tiers = Math.max(3, Math.floor(height / 2))
 
   useFrame(({clock})=>{
+
     if(ref.current){
       ref.current.rotation.y =
         Math.sin(clock.elapsedTime*0.15 + repo.id)*0.015
     }
+
+    /* window flicker */
+
+    windowRef.current.forEach((w,i)=>{
+      if(!w) return
+      w.material.emissiveIntensity =
+        2.5 + Math.sin(clock.elapsedTime*2 + i)*0.8
+    })
+
   })
 
   return (
@@ -39,7 +49,7 @@ export default function Building({ position, height, repo }) {
         return (
           <group key={i}>
 
-            {/* tower section */}
+            {/* tower */}
 
             <mesh
               position={[0,y+1,0]}
@@ -61,56 +71,29 @@ export default function Building({ position, height, repo }) {
 
             </mesh>
 
+            {/* windows */}
 
-            {/* FRONT WINDOWS */}
+            {[
+              [0,y+1,1.52],
+              [0,y+1,-1.52],
+              [1.52,y+1,0],
+              [-1.52,y+1,0]
+            ].map((p,wi)=>(
+              <mesh
+                key={wi}
+                ref={el => windowRef.current[i*4 + wi] = el}
+                position={p}
+              >
+                <boxGeometry args={[1.2,0.5,0.05]} />
+                <meshStandardMaterial
+                  color="#fff4c2"
+                  emissive="#fff4c2"
+                  emissiveIntensity={3}
+                />
+              </mesh>
+            ))}
 
-            <mesh position={[0,y+1,1.52]}>
-              <boxGeometry args={[1.2,0.5,0.05]} />
-              <meshStandardMaterial
-                color="#fff4c2"
-                emissive="#fff4c2"
-                emissiveIntensity={3.5}
-              />
-            </mesh>
-
-
-            {/* BACK WINDOWS */}
-
-            <mesh position={[0,y+1,-1.52]}>
-              <boxGeometry args={[1.2,0.5,0.05]} />
-              <meshStandardMaterial
-                color="#fff4c2"
-                emissive="#fff4c2"
-                emissiveIntensity={3.5}
-              />
-            </mesh>
-
-
-            {/* RIGHT WINDOWS */}
-
-            <mesh position={[1.52,y+1,0]}>
-              <boxGeometry args={[0.05,0.5,1.2]} />
-              <meshStandardMaterial
-                color="#fff4c2"
-                emissive="#fff4c2"
-                emissiveIntensity={3.5}
-              />
-            </mesh>
-
-
-            {/* LEFT WINDOWS */}
-
-            <mesh position={[-1.52,y+1,0]}>
-              <boxGeometry args={[0.05,0.5,1.2]} />
-              <meshStandardMaterial
-                color="#fff4c2"
-                emissive="#fff4c2"
-                emissiveIntensity={3.5}
-              />
-            </mesh>
-
-
-            {/* neon band for popular repos */}
+            {/* neon band */}
 
             {stars > 5 && (
               <mesh position={[0,y+2,1.55]}>
@@ -126,28 +109,19 @@ export default function Building({ position, height, repo }) {
         )
       })}
 
-
-      {/* rooftop antenna */}
+      {/* antenna */}
 
       {height > 8 && (
         <mesh position={[0,tiers*2 + 1,0]}>
           <cylinderGeometry args={[0.15,0.15,2]} />
-          <meshStandardMaterial
-            emissive="white"
-            emissiveIntensity={2}
-          />
+          <meshStandardMaterial emissive="white" emissiveIntensity={2}/>
         </mesh>
       )}
-
 
       {/* hover label */}
 
       {hovered && (
-        <Html
-          position={[0,tiers*2 + 3,0]}
-          center
-          transform={false}
-        >
+        <Html position={[0,tiers*2 + 3,0]} center>
           <div style={{
             background:"rgba(20,20,20,0.95)",
             color:"white",

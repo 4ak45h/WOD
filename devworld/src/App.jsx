@@ -6,6 +6,7 @@ import CountryView from "./CountryView"
 import GithubCity from "./GithubCity"
 
 
+
 function CameraController({ zoomTarget, onZoomComplete }) {
 
   const { camera } = useThree()
@@ -36,31 +37,45 @@ function CameraController({ zoomTarget, onZoomComplete }) {
 }
 
 
-/* 🌙 Realistic Moon */
+
+/* 🌙 Visible Moon */
 
 function Moon() {
-  return (
-    <group position={[250,200,-350]}>
 
-      {/* moon */}
+  return (
+
+    <group position={[-120, 120, -260]}>
+
+      {/* moon sphere */}
+
       <mesh>
-        <sphereGeometry args={[25,64,64]} />
-        <meshStandardMaterial
-          color="#e6e6e6"
-          emissive="#999999"
-          emissiveIntensity={0.7}
+        <sphereGeometry args={[22,64,64]} />
+        <meshBasicMaterial color="#f2f2f2" />
+      </mesh>
+
+      {/* glow halo */}
+
+      <mesh>
+        <sphereGeometry args={[32,32,32]} />
+        <meshBasicMaterial
+          color="#9fb4ff"
+          transparent
+          opacity={0.18}
         />
       </mesh>
 
-      {/* moonlight */}
+      {/* moon light */}
+
       <directionalLight
         position={[0,0,0]}
-        intensity={0.8}
+        intensity={0.7}
         color="#cfd8ff"
       />
 
     </group>
+
   )
+
 }
 
 
@@ -81,19 +96,15 @@ export default function App() {
 
   return (
 
-    <Canvas
-      shadows
-      camera={{ position: [0, 25, 25], fov: 50 }}
-    >
+    <Canvas shadows camera={{ position: [0,25,25], fov: 50 }}>
 
-      {/* background sky */}
+      {/* night sky */}
 
-      <color attach="background" args={["#020207"]} />
+      <color attach="background" args={["#030510"]} />
 
       {/* fog */}
 
       <fog attach="fog" args={["#050505", 60, 220]} />
-
 
       {/* stars */}
 
@@ -105,7 +116,6 @@ export default function App() {
         saturation={0}
         fade
       />
-
 
       {/* moon */}
 
@@ -126,7 +136,7 @@ export default function App() {
 
       {/* ambient night light */}
 
-      <ambientLight intensity={0.45} />
+      <ambientLight intensity={0.5} />
 
 
       {/* city fill light */}
@@ -155,5 +165,6 @@ export default function App() {
       )}
 
     </Canvas>
+
   )
 }
