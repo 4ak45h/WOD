@@ -53,14 +53,15 @@ export default function App() {
       shadows
       camera={{ position: [0, 25, 25], fov: 50 }}
     >
+      <fog attach="fog" args={["#d6ecff", 60, 180]} />
 
       {/* Global ambient light */}
-      <ambientLight intensity={0.4} />
+      <ambientLight intensity={0.45} />
 
       {/* Main sun light */}
       <directionalLight
-        position={[20, 30, 20]}
-        intensity={1.5}
+        position={[25, 35, 20]}
+        intensity={1.2}
         castShadow
       />
 

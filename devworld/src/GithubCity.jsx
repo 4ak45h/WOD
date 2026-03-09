@@ -4,9 +4,40 @@ import Building from "./Building"
 function Road({ position, width, depth }) {
   return (
     <mesh position={position}>
-      <boxGeometry args={[width, 0.1, depth]} />
-      <meshStandardMaterial color="#333" />
+      <boxGeometry args={[width, 0.08, depth]} />
+      <meshStandardMaterial color="#111111" />
     </mesh>
+  )
+}
+
+function StreetLight({ position }) {
+  return (
+    <group position={position}>
+
+      {/* pole */}
+      <mesh position={[0,2,0]}>
+        <cylinderGeometry args={[0.05,0.05,4]} />
+        <meshStandardMaterial color="#888"/>
+      </mesh>
+
+      {/* light source */}
+      <pointLight
+        position={[0,4,0]}
+        intensity={1.5}
+        distance={20}
+        color="#ffd27a"
+      />
+
+      {/* glowing bulb */}
+      <mesh position={[0,4,0]}>
+        <sphereGeometry args={[0.2]} />
+        <meshStandardMaterial
+          emissive="#ffd27a"
+          emissiveIntensity={2}
+        />
+      </mesh>
+
+    </group>
   )
 }
 
@@ -29,6 +60,9 @@ export default function GithubCity() {
   const blockOffset = spacing / 2
 
   const roads = []
+  const lights = []
+
+  /* generate roads */
 
   for (let i = -gridSize; i <= gridSize; i++) {
 
@@ -49,24 +83,45 @@ export default function GithubCity() {
         depth={1}
       />
     )
+  }
 
+  /* generate street lights at intersections */
+
+  for (let x = -gridSize; x <= gridSize; x++) {
+    for (let z = -gridSize; z <= gridSize; z++) {
+
+      if (Math.abs(x) === gridSize || Math.abs(z) === gridSize) continue
+
+      lights.push(
+        <StreetLight
+          key={"light-"+x+"-"+z}
+          position={[x * spacing, 0, z * spacing]}
+        />
+      )
+    }
   }
 
   return (
     <>
-      <mesh rotation={[-Math.PI/2,0,0]} receiveShadow>
-  <planeGeometry args={[200,200]} />
-  <meshStandardMaterial color="#1a1a1a" />
-</mesh>
 
+      {/* cement ground */}
+      <mesh rotation={[-Math.PI/2,0,0]} receiveShadow>
+        <planeGeometry args={[200,200]} />
+        <meshStandardMaterial color="#b8b8b8" />
+      </mesh>
+
+      {/* roads */}
       {roads}
 
+      {/* street lights */}
+      {lights}
+
+      {/* buildings */}
       {repos.map((repo, index) => {
 
         const row = Math.floor(index / gridSize)
         const col = index % gridSize
 
-        // shift buildings into blocks instead of roads
         const x = col * spacing - (gridSize * spacing)/2 + blockOffset
         const z = row * spacing - (gridSize * spacing)/2 + blockOffset
 
