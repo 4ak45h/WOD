@@ -40,6 +40,7 @@ export default function Building({ position, height, repo }) {
           <group key={i}>
 
             {/* tower section */}
+
             <mesh
               position={[0,y+1,0]}
               scale={[scale,1,scale]}
@@ -52,46 +53,62 @@ export default function Building({ position, height, repo }) {
 
               <meshPhysicalMaterial
                 color={style.color}
-                roughness={0.2}
-                metalness={0.6}
+                roughness={0.15}
+                metalness={0.7}
                 reflectivity={1}
                 clearcoat={1}
               />
+
             </mesh>
 
-            {/* windows */}
+
+            {/* FRONT WINDOWS */}
 
             <mesh position={[0,y+1,1.52]}>
               <boxGeometry args={[1.2,0.5,0.05]} />
               <meshStandardMaterial
+                color="#fff4c2"
                 emissive="#fff4c2"
-                emissiveIntensity={Math.random()*0.8}
+                emissiveIntensity={3.5}
               />
             </mesh>
+
+
+            {/* BACK WINDOWS */}
 
             <mesh position={[0,y+1,-1.52]}>
               <boxGeometry args={[1.2,0.5,0.05]} />
               <meshStandardMaterial
+                color="#fff4c2"
                 emissive="#fff4c2"
-                emissiveIntensity={Math.random()*0.8}
+                emissiveIntensity={3.5}
               />
             </mesh>
+
+
+            {/* RIGHT WINDOWS */}
 
             <mesh position={[1.52,y+1,0]}>
               <boxGeometry args={[0.05,0.5,1.2]} />
               <meshStandardMaterial
+                color="#fff4c2"
                 emissive="#fff4c2"
-                emissiveIntensity={Math.random()*0.8}
+                emissiveIntensity={3.5}
               />
             </mesh>
+
+
+            {/* LEFT WINDOWS */}
 
             <mesh position={[-1.52,y+1,0]}>
               <boxGeometry args={[0.05,0.5,1.2]} />
               <meshStandardMaterial
+                color="#fff4c2"
                 emissive="#fff4c2"
-                emissiveIntensity={Math.random()*0.8}
+                emissiveIntensity={3.5}
               />
             </mesh>
+
 
             {/* neon band for popular repos */}
 
@@ -100,7 +117,7 @@ export default function Building({ position, height, repo }) {
                 <boxGeometry args={[3,0.05,0.05]} />
                 <meshStandardMaterial
                   emissive={style.color}
-                  emissiveIntensity={stars/10}
+                  emissiveIntensity={Math.min(stars/5,5)}
                 />
               </mesh>
             )}
@@ -109,16 +126,21 @@ export default function Building({ position, height, repo }) {
         )
       })}
 
+
       {/* rooftop antenna */}
 
       {height > 8 && (
         <mesh position={[0,tiers*2 + 1,0]}>
           <cylinderGeometry args={[0.15,0.15,2]} />
-          <meshStandardMaterial emissive="white" emissiveIntensity={1}/>
+          <meshStandardMaterial
+            emissive="white"
+            emissiveIntensity={2}
+          />
         </mesh>
       )}
 
-      {/* hover tag */}
+
+      {/* hover label */}
 
       {hovered && (
         <Html

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import Building from "./Building"
 import Tree from "./Tree"
 import GrassField from "./GrassField"
+import Car from "./Car"
 
 function Road({ position, width, depth }) {
   return (
@@ -18,26 +19,26 @@ function StreetLight({ position }) {
 
       {/* pole */}
       <mesh position={[0,2,0]}>
-        <cylinderGeometry args={[0.05,0.05,4]} />
-        <meshStandardMaterial color="#888"/>
+        <cylinderGeometry args={[0.07,0.07,4]} />
+        <meshStandardMaterial color="#aaaaaa"/>
       </mesh>
 
-      {/* light */}
-      <pointLight
-        position={[0,4,0]}
-        intensity={1.5}
-        distance={20}
-        color="#ffd27a"
-      />
-
-      {/* bulb */}
+      {/* glowing bulb */}
       <mesh position={[0,4,0]}>
-        <sphereGeometry args={[0.2]} />
+        <sphereGeometry args={[0.25]} />
         <meshStandardMaterial
           emissive="#ffd27a"
-          emissiveIntensity={2}
+          emissiveIntensity={6}
         />
       </mesh>
+
+      {/* actual light */}
+      <pointLight
+        position={[0,4,0]}
+        intensity={7}
+        distance={40}
+        color="#ffd27a"
+      />
 
     </group>
   )
@@ -124,19 +125,25 @@ export default function GithubCity() {
   return (
     <>
 
-{/* base soil */}
+      {/* soil base */}
+      <mesh rotation={[-Math.PI/2,0,0]} receiveShadow>
+        <planeGeometry args={[200,200]} />
+        <meshStandardMaterial color="#0b1f0b"/>
+      </mesh>
 
-<mesh rotation={[-Math.PI/2,0,0]} receiveShadow>
-  <planeGeometry args={[200,200]} />
-  <meshStandardMaterial color="#0b1f0b"/>
-</mesh>
-
-{/* grass blades */}
-
-<GrassField/>
+      {/* grass patches */}
+      <GrassField/>
 
       {/* roads */}
       {roads}
+
+      {/* moving traffic */}
+      <Car start={[-40,0.2,0]} />
+      <Car start={[40,0.2,0]} />
+      <Car start={[0,0.2,-40]} />
+      <Car start={[0,0.2,40]} />
+      <Car start={[20,0.2,-30]} />
+      <Car start={[-25,0.2,30]} />
 
       {/* lights */}
       {lights}

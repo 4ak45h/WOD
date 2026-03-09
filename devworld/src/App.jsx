@@ -1,9 +1,10 @@
 import { Canvas, useThree, useFrame } from "@react-three/fiber"
-import { OrbitControls } from "@react-three/drei"
+import { OrbitControls, Stars } from "@react-three/drei"
 import { useState, useRef } from "react"
 
 import CountryView from "./CountryView"
 import GithubCity from "./GithubCity"
+
 
 function CameraController({ zoomTarget, onZoomComplete }) {
 
@@ -34,6 +35,36 @@ function CameraController({ zoomTarget, onZoomComplete }) {
   return null
 }
 
+
+/* 🌙 Realistic Moon */
+
+function Moon() {
+  return (
+    <group position={[250,200,-350]}>
+
+      {/* moon */}
+      <mesh>
+        <sphereGeometry args={[25,64,64]} />
+        <meshStandardMaterial
+          color="#e6e6e6"
+          emissive="#999999"
+          emissiveIntensity={0.7}
+        />
+      </mesh>
+
+      {/* moonlight */}
+      <directionalLight
+        position={[0,0,0]}
+        intensity={0.8}
+        color="#cfd8ff"
+      />
+
+    </group>
+  )
+}
+
+
+
 export default function App() {
 
   const [view, setView] = useState("country")
@@ -49,34 +80,71 @@ export default function App() {
   }
 
   return (
+
     <Canvas
       shadows
       camera={{ position: [0, 25, 25], fov: 50 }}
     >
-      <fog attach="fog" args={["#050505", 40, 160]} />
 
-      {/* Global ambient light */}
+      {/* background sky */}
+
+      <color attach="background" args={["#020207"]} />
+
+      {/* fog */}
+
+      <fog attach="fog" args={["#050505", 60, 220]} />
+
+
+      {/* stars */}
+
+      <Stars
+        radius={400}
+        depth={80}
+        count={6000}
+        factor={4}
+        saturation={0}
+        fade
+      />
+
+
+      {/* moon */}
+
+      <Moon />
+
+
+      {/* horizon glow */}
+
+      <mesh position={[0,-5,-150]}>
+        <planeGeometry args={[500,160]} />
+        <meshBasicMaterial
+          color="#1a1a2e"
+          transparent
+          opacity={0.35}
+        />
+      </mesh>
+
+
+      {/* ambient night light */}
+
       <ambientLight intensity={0.45} />
 
-      {/* Main sun light */}
-      <directionalLight
-        position={[25, 35, 20]}
-        intensity={1.2}
-        castShadow
+
+      {/* city fill light */}
+
+      <pointLight
+        position={[-20,15,-20]}
+        intensity={0.6}
       />
 
-      {/* Soft city fill light */}
-      <pointLight
-        position={[-20, 15, -20]}
-        intensity={0.5}
-      />
 
       <OrbitControls />
+
 
       <CameraController
         zoomTarget={zooming}
         onZoomComplete={finishZoom}
       />
+
 
       {view === "country" && (
         <CountryView enterGithub={enterGithub}/>
