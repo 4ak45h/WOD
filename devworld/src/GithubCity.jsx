@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react"
 import Building from "./Building"
+import Tree from "./Tree"
+import GrassField from "./GrassField"
 
 function Road({ position, width, depth }) {
   return (
@@ -20,7 +22,7 @@ function StreetLight({ position }) {
         <meshStandardMaterial color="#888"/>
       </mesh>
 
-      {/* light source */}
+      {/* light */}
       <pointLight
         position={[0,4,0]}
         intensity={1.5}
@@ -28,7 +30,7 @@ function StreetLight({ position }) {
         color="#ffd27a"
       />
 
-      {/* glowing bulb */}
+      {/* bulb */}
       <mesh position={[0,4,0]}>
         <sphereGeometry args={[0.2]} />
         <meshStandardMaterial
@@ -61,8 +63,9 @@ export default function GithubCity() {
 
   const roads = []
   const lights = []
+  const trees = []
 
-  /* generate roads */
+  /* roads */
 
   for (let i = -gridSize; i <= gridSize; i++) {
 
@@ -85,7 +88,7 @@ export default function GithubCity() {
     )
   }
 
-  /* generate street lights at intersections */
+  /* street lights */
 
   for (let x = -gridSize; x <= gridSize; x++) {
     for (let z = -gridSize; z <= gridSize; z++) {
@@ -101,20 +104,45 @@ export default function GithubCity() {
     }
   }
 
+  /* roadside trees */
+
+  for (let x = -gridSize; x <= gridSize; x++) {
+    for (let z = -gridSize; z <= gridSize; z++) {
+
+      if ((x + z) % 2 === 0) continue
+
+      trees.push(
+        <Tree
+          key={"tree-"+x+"-"+z}
+          position={[x * spacing + 3, 0, z * spacing + 3]}
+        />
+      )
+
+    }
+  }
+
   return (
     <>
 
-      {/* cement ground */}
-      <mesh rotation={[-Math.PI/2,0,0]} receiveShadow>
-        <planeGeometry args={[200,200]} />
-        <meshStandardMaterial color="#b8b8b8" />
-      </mesh>
+{/* base soil */}
+
+<mesh rotation={[-Math.PI/2,0,0]} receiveShadow>
+  <planeGeometry args={[200,200]} />
+  <meshStandardMaterial color="#0b1f0b"/>
+</mesh>
+
+{/* grass blades */}
+
+<GrassField/>
 
       {/* roads */}
       {roads}
 
-      {/* street lights */}
+      {/* lights */}
       {lights}
+
+      {/* trees */}
+      {trees}
 
       {/* buildings */}
       {repos.map((repo, index) => {

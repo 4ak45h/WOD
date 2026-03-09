@@ -3,12 +3,12 @@ import { useState, useRef } from "react"
 import { useFrame } from "@react-three/fiber"
 
 const languageStyles = {
-  JavaScript: "#f7df1e",
-  Python: "#3572A5",
-  Java: "#b07219",
-  TypeScript: "#3178c6",
-  Dart: "#00B4AB",
-  default: "#4da6ff"
+  JavaScript: { color:"#f7df1e" },
+  Python: { color:"#3572A5" },
+  Java: { color:"#b07219" },
+  TypeScript: { color:"#3178c6" },
+  Dart: { color:"#00B4AB" },
+  default: { color:"#4da6ff" }
 }
 
 export default function Building({ position, height, repo }) {
@@ -16,85 +16,113 @@ export default function Building({ position, height, repo }) {
   const [hovered,setHovered] = useState(false)
   const ref = useRef()
 
-  const color = languageStyles[repo.language] || languageStyles.default
+  const style = languageStyles[repo.language] || languageStyles.default
   const stars = repo.stargazers_count || 0
-  const glow = Math.min(stars / 20, 1.5)
 
-  const floors = Math.max(3, Math.floor(height / 2))
+  const tiers = Math.max(3, Math.floor(height / 2))
 
   useFrame(({clock})=>{
     if(ref.current){
       ref.current.rotation.y =
-        Math.sin(clock.elapsedTime*0.15 + repo.id)*0.02
+        Math.sin(clock.elapsedTime*0.15 + repo.id)*0.015
     }
   })
 
   return (
     <group position={[position[0],0,position[2]]} ref={ref}>
 
-      {Array.from({ length: floors }).map((_, i) => {
+      {Array.from({ length: tiers }).map((_, i) => {
 
-        const y = i * 1.8 + 0.9
+        const y = i * 2
+        const scale = 1 - i * 0.08
 
         return (
           <group key={i}>
 
-            {/* main building floor */}
+            {/* tower section */}
             <mesh
-              position={[0,y,0]}
+              position={[0,y+1,0]}
+              scale={[scale,1,scale]}
               castShadow
               receiveShadow
               onPointerOver={()=>setHovered(true)}
               onPointerOut={()=>setHovered(false)}
             >
-              <boxGeometry args={[3,1.8,3]} />
+              <boxGeometry args={[3,2,3]} />
 
-              <meshStandardMaterial
-                color={color}
-                roughness={0.4}
-                metalness={0.2}
-                emissive={color}
-                emissiveIntensity={glow}
+              <meshPhysicalMaterial
+                color={style.color}
+                roughness={0.2}
+                metalness={0.6}
+                reflectivity={1}
+                clearcoat={1}
               />
             </mesh>
 
-{/* windows on building faces */}
-{Array.from({length:6}).map((_,w)=>{
+            {/* windows */}
 
-  const side = w % 3
-  const offset = 1.45
+            <mesh position={[0,y+1,1.52]}>
+              <boxGeometry args={[1.2,0.5,0.05]} />
+              <meshStandardMaterial
+                emissive="#fff4c2"
+                emissiveIntensity={Math.random()*0.8}
+              />
+            </mesh>
 
-  let pos = [0,y,0]
+            <mesh position={[0,y+1,-1.52]}>
+              <boxGeometry args={[1.2,0.5,0.05]} />
+              <meshStandardMaterial
+                emissive="#fff4c2"
+                emissiveIntensity={Math.random()*0.8}
+              />
+            </mesh>
 
-  if(side === 0) pos = [offset, y, 0]
-  if(side === 1) pos = [-offset, y, 0]
-  if(side === 2) pos = [0, y, offset]
+            <mesh position={[1.52,y+1,0]}>
+              <boxGeometry args={[0.05,0.5,1.2]} />
+              <meshStandardMaterial
+                emissive="#fff4c2"
+                emissiveIntensity={Math.random()*0.8}
+              />
+            </mesh>
 
-  return (
-    <mesh key={w} position={pos}>
-      <boxGeometry args={[0.25,0.6,0.02]} />
-      <meshStandardMaterial
-        color="#fff4c2"
-        emissive="#fff4c2"
-        emissiveIntensity={Math.random()*0.9}
-      />
-    </mesh>
-  )
+            <mesh position={[-1.52,y+1,0]}>
+              <boxGeometry args={[0.05,0.5,1.2]} />
+              <meshStandardMaterial
+                emissive="#fff4c2"
+                emissiveIntensity={Math.random()*0.8}
+              />
+            </mesh>
 
-})}
+            {/* neon band for popular repos */}
 
-      {/* antenna */}
+            {stars > 5 && (
+              <mesh position={[0,y+2,1.55]}>
+                <boxGeometry args={[3,0.05,0.05]} />
+                <meshStandardMaterial
+                  emissive={style.color}
+                  emissiveIntensity={stars/10}
+                />
+              </mesh>
+            )}
+
+          </group>
+        )
+      })}
+
+      {/* rooftop antenna */}
+
       {height > 8 && (
-        <mesh position={[0,floors*1.8 + 1,0]}>
+        <mesh position={[0,tiers*2 + 1,0]}>
           <cylinderGeometry args={[0.15,0.15,2]} />
           <meshStandardMaterial emissive="white" emissiveIntensity={1}/>
         </mesh>
       )}
 
-      {/* hover label */}
+      {/* hover tag */}
+
       {hovered && (
         <Html
-          position={[0,floors*1.8 + 3,0]}
+          position={[0,tiers*2 + 3,0]}
           center
           transform={false}
         >
