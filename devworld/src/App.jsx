@@ -16,15 +16,15 @@ function CameraController({ zoomTarget, onZoomComplete }) {
 
       progress.current += 0.02
 
-      camera.position.lerp(
-        { x: 0, y: 15, z: 15 },
-        progress.current
-      )
+      const target = { x: 0, y: 15, z: 15 }
+
+      camera.position.lerp(target, progress.current)
 
       camera.lookAt(0,0,0)
 
       if (progress.current >= 1) {
         onZoomComplete()
+        progress.current = 0
       }
 
     }
@@ -49,10 +49,26 @@ export default function App() {
   }
 
   return (
-    <Canvas camera={{ position: [0, 25, 25], fov: 50 }}>
+    <Canvas
+      shadows
+      camera={{ position: [0, 25, 25], fov: 50 }}
+    >
 
-      <ambientLight intensity={0.7} />
-      <directionalLight position={[10,20,10]} />
+      {/* Global ambient light */}
+      <ambientLight intensity={0.4} />
+
+      {/* Main sun light */}
+      <directionalLight
+        position={[20, 30, 20]}
+        intensity={1.5}
+        castShadow
+      />
+
+      {/* Soft city fill light */}
+      <pointLight
+        position={[-20, 15, -20]}
+        intensity={0.5}
+      />
 
       <OrbitControls />
 

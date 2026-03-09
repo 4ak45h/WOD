@@ -5,7 +5,7 @@ function Road({ position, width, depth }) {
   return (
     <mesh position={position}>
       <boxGeometry args={[width, 0.1, depth]} />
-      <meshStandardMaterial color="#444" />
+      <meshStandardMaterial color="#333" />
     </mesh>
   )
 }
@@ -16,7 +16,7 @@ export default function GithubCity() {
 
   useEffect(() => {
 
-    const username = "YOUR_GITHUB_USERNAME"
+    const username = "4AK45H"
 
     fetch(`https://api.github.com/users/${username}/repos`)
       .then(res => res.json())
@@ -24,19 +24,20 @@ export default function GithubCity() {
 
   }, [])
 
-  const gridSize = 5
-  const spacing = 8
+  const gridSize = 4
+  const spacing = 10
+  const blockOffset = spacing / 2
 
   const roads = []
 
-  for (let i = -2; i <= 2; i++) {
+  for (let i = -gridSize; i <= gridSize; i++) {
 
     roads.push(
       <Road
         key={"roadx"+i}
         position={[i * spacing, 0.05, 0]}
         width={1}
-        depth={spacing * gridSize}
+        depth={spacing * gridSize * 2}
       />
     )
 
@@ -44,7 +45,7 @@ export default function GithubCity() {
       <Road
         key={"roadz"+i}
         position={[0, 0.05, i * spacing]}
-        width={spacing * gridSize}
+        width={spacing * gridSize * 2}
         depth={1}
       />
     )
@@ -53,7 +54,10 @@ export default function GithubCity() {
 
   return (
     <>
-      <gridHelper args={[100,100]} />
+      <mesh rotation={[-Math.PI/2,0,0]} receiveShadow>
+  <planeGeometry args={[200,200]} />
+  <meshStandardMaterial color="#1a1a1a" />
+</mesh>
 
       {roads}
 
@@ -62,8 +66,9 @@ export default function GithubCity() {
         const row = Math.floor(index / gridSize)
         const col = index % gridSize
 
-        const x = col * spacing - 16
-        const z = row * spacing - 16
+        // shift buildings into blocks instead of roads
+        const x = col * spacing - (gridSize * spacing)/2 + blockOffset
+        const z = row * spacing - (gridSize * spacing)/2 + blockOffset
 
         const base = repo.size || 10
         const height = Math.log(base + 10) * 2
