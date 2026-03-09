@@ -4,14 +4,93 @@ import Tree from "./Tree"
 import GrassField from "./GrassField"
 import Car from "./Car"
 
+
 function Road({ position, width, depth }) {
+
+  const dashes = []
+
+  const dashLength = 1.2
+  const gap = 1
+  const thickness = 0.12
+
+  const isVertical = width === 1
+  const isHorizontal = depth === 1
+
+  const length = isVertical ? depth : width
+
+  const count = Math.floor(length / (dashLength + gap))
+
+  for (let i = 0; i < count; i++) {
+
+    const offset = i * (dashLength + gap) - length / 2
+
+    dashes.push(
+      <mesh
+        key={i}
+        position={
+          isVertical
+            ? [0, 0.06, offset]
+            : [offset, 0.06, 0]
+        }
+      >
+        <boxGeometry
+          args={
+            isVertical
+              ? [thickness,0.02,dashLength]
+              : [dashLength,0.02,thickness]
+          }
+        />
+        <meshBasicMaterial color="white"/>
+      </mesh>
+    )
+  }
+
   return (
-    <mesh position={position}>
-      <boxGeometry args={[width, 0.08, depth]} />
-      <meshStandardMaterial color="#111111" />
-    </mesh>
+    <group position={position}>
+
+      {/* asphalt */}
+      <mesh>
+        <boxGeometry args={[width,0.08,depth]} />
+        <meshStandardMaterial color="#111111"/>
+      </mesh>
+
+      {/* center dashed lane */}
+      {dashes}
+
+      {/* edge borders */}
+
+      {isVertical && (
+        <>
+          <mesh position={[-0.42,0.06,0]}>
+            <boxGeometry args={[0.08,0.02,depth]} />
+            <meshBasicMaterial color="white"/>
+          </mesh>
+
+          <mesh position={[0.42,0.06,0]}>
+            <boxGeometry args={[0.08,0.02,depth]} />
+            <meshBasicMaterial color="white"/>
+          </mesh>
+        </>
+      )}
+
+      {isHorizontal && (
+        <>
+          <mesh position={[0,0.06,-0.42]}>
+            <boxGeometry args={[width,0.02,0.08]} />
+            <meshBasicMaterial color="white"/>
+          </mesh>
+
+          <mesh position={[0,0.06,0.42]}>
+            <boxGeometry args={[width,0.02,0.08]} />
+            <meshBasicMaterial color="white"/>
+          </mesh>
+        </>
+      )}
+
+    </group>
   )
-}
+}}
+
 
 function StreetLight({ position }) {
   return (
@@ -23,7 +102,7 @@ function StreetLight({ position }) {
         <meshStandardMaterial color="#aaaaaa"/>
       </mesh>
 
-      {/* glowing bulb */}
+      {/* bulb */}
       <mesh position={[0,4,0]}>
         <sphereGeometry args={[0.25]} />
         <meshStandardMaterial
@@ -32,7 +111,7 @@ function StreetLight({ position }) {
         />
       </mesh>
 
-      {/* actual light */}
+      {/* light */}
       <pointLight
         position={[0,4,0]}
         intensity={7}
@@ -43,6 +122,7 @@ function StreetLight({ position }) {
     </group>
   )
 }
+
 
 export default function GithubCity() {
 
@@ -66,7 +146,7 @@ export default function GithubCity() {
   const lights = []
   const trees = []
 
-  /* roads */
+  /* Roads */
 
   for (let i = -gridSize; i <= gridSize; i++) {
 
@@ -89,23 +169,33 @@ export default function GithubCity() {
     )
   }
 
-  /* street lights */
+
+  /* Street lights */
 
   for (let x = -gridSize; x <= gridSize; x++) {
     for (let z = -gridSize; z <= gridSize; z++) {
 
-      if (Math.abs(x) === gridSize || Math.abs(z) === gridSize) continue
+      const baseX = x * spacing
+      const baseZ = z * spacing
 
       lights.push(
         <StreetLight
-          key={"light-"+x+"-"+z}
-          position={[x * spacing, 0, z * spacing]}
+          key={"lightA-"+x+"-"+z}
+          position={[baseX + 2.5, 0, baseZ + 2.5]}
+        />
+      )
+
+      lights.push(
+        <StreetLight
+          key={"lightB-"+x+"-"+z}
+          position={[baseX - 2.5, 0, baseZ - 2.5]}
         />
       )
     }
   }
 
-  /* roadside trees */
+
+  /* Trees */
 
   for (let x = -gridSize; x <= gridSize; x++) {
     for (let z = -gridSize; z <= gridSize; z++) {
@@ -122,22 +212,23 @@ export default function GithubCity() {
     }
   }
 
+
   return (
     <>
 
-      {/* soil base */}
+      {/* ground */}
       <mesh rotation={[-Math.PI/2,0,0]} receiveShadow>
         <planeGeometry args={[200,200]} />
         <meshStandardMaterial color="#0b1f0b"/>
       </mesh>
 
-      {/* grass patches */}
+      {/* grass */}
       <GrassField/>
 
       {/* roads */}
       {roads}
 
-      {/* moving traffic */}
+      {/* cars */}
       <Car start={[-40,0.2,0]} />
       <Car start={[40,0.2,0]} />
       <Car start={[0,0.2,-40]} />
@@ -152,6 +243,7 @@ export default function GithubCity() {
       {trees}
 
       {/* buildings */}
+
       {repos.map((repo, index) => {
 
         const row = Math.floor(index / gridSize)

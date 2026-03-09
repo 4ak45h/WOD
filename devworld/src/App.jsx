@@ -4,6 +4,7 @@ import { useState, useRef } from "react"
 
 import CountryView from "./CountryView"
 import GithubCity from "./GithubCity"
+import AirTraffic from "./AirTraffic"
 
 
 
@@ -38,22 +39,18 @@ function CameraController({ zoomTarget, onZoomComplete }) {
 
 
 
-/* 🌙 Visible Moon */
+/* Moon */
 
 function Moon() {
 
   return (
 
-    <group position={[-120, 120, -260]}>
-
-      {/* moon sphere */}
+    <group position={[-120,120,-260]}>
 
       <mesh>
         <sphereGeometry args={[22,64,64]} />
-        <meshBasicMaterial color="#f2f2f2" />
+        <meshBasicMaterial color="#f2f2f2"/>
       </mesh>
-
-      {/* glow halo */}
 
       <mesh>
         <sphereGeometry args={[32,32,32]} />
@@ -64,8 +61,6 @@ function Moon() {
         />
       </mesh>
 
-      {/* moon light */}
-
       <directionalLight
         position={[0,0,0]}
         intensity={0.7}
@@ -75,7 +70,6 @@ function Moon() {
     </group>
 
   )
-
 }
 
 
@@ -96,15 +90,15 @@ export default function App() {
 
   return (
 
-    <Canvas shadows camera={{ position: [0,25,25], fov: 50 }}>
+    <Canvas shadows camera={{ position:[0,25,25], fov:50 }}>
 
-      {/* night sky */}
+      {/* sky */}
 
       <color attach="background" args={["#030510"]} />
 
       {/* fog */}
 
-      <fog attach="fog" args={["#050505", 60, 220]} />
+      <fog attach="fog" args={["#050505",60,220]} />
 
       {/* stars */}
 
@@ -134,17 +128,21 @@ export default function App() {
       </mesh>
 
 
-      {/* ambient night light */}
+      {/* night ambient */}
 
       <ambientLight intensity={0.5} />
 
 
-      {/* city fill light */}
+      {/* city fill */}
 
-      <pointLight
-        position={[-20,15,-20]}
-        intensity={0.6}
-      />
+      <pointLight position={[-20,15,-20]} intensity={0.6} />
+
+
+      {/* aircraft lights */}
+
+      <AirTraffic />
+      <AirTraffic />
+      <AirTraffic />
 
 
       <OrbitControls />
