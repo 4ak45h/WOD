@@ -1,36 +1,35 @@
-import Country from "./Country"
-import State from "./State"
+// import State from "./State"
 
-export default function CountryView({ enterGithub }) {
+// export default function CountryView({ enterGithub }) {
 
-  return (
-    <>
+//   return (
+//     <group>
 
-      {/* grid background */}
-      <gridHelper args={[100, 100]} />
+//       {/* State 1 */}
 
-      {/* main country land */}
-      <Country />
+//       <State
+//         name="Power"
+//         color="#2f2f2f"
+//         position={[0,0.3,0]}
+//         onClick={enterGithub}
+//       />
 
-      {/* State 1 (GitHub state - active) */}
-      <State
-        position={[-10, 0.5, 5]}
-        color="green"
-        onClick={enterGithub}
-      />
+//       {/* State 2 */}
 
-      {/* State 2 (locked) */}
-      <State
-        position={[10, 0.5, 5]}
-        color="gray"
-      />
+//       <State
+//         name="Social"
+//         color="#1f3a5f"
+//         position={[18,0.3,-10]}
+//       />
 
-      {/* State 3 (locked) */}
-      <State
-        position={[0, 0.5, -10]}
-        color="gray"
-      />
+//       {/* State 3 */}
 
-    </>
-  )
-}
+//       <State
+//         name="Unknown"
+//         color="#3a2f2f"
+//         position={[-18,0.3,-10]}
+//       />
+
+//     </group>
+//   )
+// }

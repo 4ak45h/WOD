@@ -41,36 +41,36 @@ function CameraController({ zoomTarget, onZoomComplete }) {
 
 /* Moon */
 
-function Moon() {
+// function Moon() {
 
-  return (
+//   return (
 
-    <group position={[-120,120,-260]}>
+//     <group position={[-120,120,-260]}>
 
-      <mesh>
-        <sphereGeometry args={[22,64,64]} />
-        <meshBasicMaterial color="#f2f2f2"/>
-      </mesh>
+//       <mesh>
+//         <sphereGeometry args={[22,64,64]} />
+//         <meshBasicMaterial color="#f2f2f2"/>
+//       </mesh>
 
-      <mesh>
-        <sphereGeometry args={[32,32,32]} />
-        <meshBasicMaterial
-          color="#9fb4ff"
-          transparent
-          opacity={0.18}
-        />
-      </mesh>
+//       <mesh>
+//         <sphereGeometry args={[32,32,32]} />
+//         <meshBasicMaterial
+//           color="#9fb4ff"
+//           transparent
+//           opacity={0.18}
+//         />
+//       </mesh>
 
-      <directionalLight
-        position={[0,0,0]}
-        intensity={0.7}
-        color="#cfd8ff"
-      />
+//       <directionalLight
+//         position={[0,0,0]}
+//         intensity={0.7}
+//         color="#cfd8ff"
+//       />
 
-    </group>
+//     </group>
 
-  )
-}
+//   )
+// }
 
 
 
@@ -111,9 +111,9 @@ export default function App() {
         fade
       />
 
-      {/* moon */}
+      {/* moon
 
-      <Moon />
+      <Moon /> */}
 
 
       {/* horizon glow */}

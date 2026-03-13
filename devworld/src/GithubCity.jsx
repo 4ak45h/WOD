@@ -9,9 +9,9 @@ function Road({ position, width, depth }) {
 
   const dashes = []
 
-  const dashLength = 1.2
-  const gap = 1
-  const thickness = 0.12
+  const dashLength = 3
+  const gap = 4
+  const thickness = 0.18
 
   const isVertical = width === 1
   const isHorizontal = depth === 1
@@ -36,8 +36,8 @@ function Road({ position, width, depth }) {
         <boxGeometry
           args={
             isVertical
-              ? [thickness,0.02,dashLength]
-              : [dashLength,0.02,thickness]
+              ? [thickness, 0.02, dashLength]
+              : [dashLength, 0.02, thickness]
           }
         />
         <meshBasicMaterial color="white"/>
@@ -54,20 +54,20 @@ function Road({ position, width, depth }) {
         <meshStandardMaterial color="#111111"/>
       </mesh>
 
-      {/* center dashed lane */}
+      {/* center dashed line */}
       {dashes}
 
       {/* edge borders */}
 
       {isVertical && (
         <>
-          <mesh position={[-0.42,0.06,0]}>
-            <boxGeometry args={[0.08,0.02,depth]} />
+          <mesh position={[-0.45,0.06,0]}>
+            <boxGeometry args={[0.12,0.02,depth]} />
             <meshBasicMaterial color="white"/>
           </mesh>
 
-          <mesh position={[0.42,0.06,0]}>
-            <boxGeometry args={[0.08,0.02,depth]} />
+          <mesh position={[0.45,0.06,0]}>
+            <boxGeometry args={[0.12,0.02,depth]} />
             <meshBasicMaterial color="white"/>
           </mesh>
         </>
@@ -75,13 +75,13 @@ function Road({ position, width, depth }) {
 
       {isHorizontal && (
         <>
-          <mesh position={[0,0.06,-0.42]}>
-            <boxGeometry args={[width,0.02,0.08]} />
+          <mesh position={[0,0.06,-0.45]}>
+            <boxGeometry args={[width,0.02,0.12]} />
             <meshBasicMaterial color="white"/>
           </mesh>
 
-          <mesh position={[0,0.06,0.42]}>
-            <boxGeometry args={[width,0.02,0.08]} />
+          <mesh position={[0,0.06,0.45]}>
+            <boxGeometry args={[width,0.02,0.12]} />
             <meshBasicMaterial color="white"/>
           </mesh>
         </>
@@ -89,7 +89,7 @@ function Road({ position, width, depth }) {
 
     </group>
   )
-}}
+}
 
 
 function StreetLight({ position }) {
@@ -172,8 +172,8 @@ export default function GithubCity() {
 
   /* Street lights */
 
-  for (let x = -gridSize; x <= gridSize; x++) {
-    for (let z = -gridSize; z <= gridSize; z++) {
+  for (let x = -gridSize; x <= gridSize; x+=2) {
+    for (let z = -gridSize; z <= gridSize; z+=2) {
 
       const baseX = x * spacing
       const baseZ = z * spacing
