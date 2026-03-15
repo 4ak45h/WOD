@@ -5,15 +5,18 @@ import { useState, useRef } from "react"
 import CountryView from "./CountryView"
 import GithubCity from "./GithubCity"
 import AirTraffic from "./AirTraffic"
+import ForgeView from "./ForgeView"
 
 
 
-function CameraController({ zoomTarget, onZoomComplete }) {
+function CameraController({ zoomTarget, onZoomComplete, view, setView }) {
 
   const { camera } = useThree()
   const progress = useRef(0)
 
   useFrame(() => {
+
+    /* zoom animation */
 
     if (zoomTarget) {
 
@@ -32,45 +35,18 @@ function CameraController({ zoomTarget, onZoomComplete }) {
 
     }
 
+    /* detect zoom out */
+
+    const distance = camera.position.length()
+
+    if (view === "github" && distance > 345) {
+      setView("country")
+    }
+
   })
 
   return null
 }
-
-
-
-/* Moon */
-
-// function Moon() {
-
-//   return (
-
-//     <group position={[-120,120,-260]}>
-
-//       <mesh>
-//         <sphereGeometry args={[22,64,64]} />
-//         <meshBasicMaterial color="#f2f2f2"/>
-//       </mesh>
-
-//       <mesh>
-//         <sphereGeometry args={[32,32,32]} />
-//         <meshBasicMaterial
-//           color="#9fb4ff"
-//           transparent
-//           opacity={0.18}
-//         />
-//       </mesh>
-
-//       <directionalLight
-//         position={[0,0,0]}
-//         intensity={0.7}
-//         color="#cfd8ff"
-//       />
-
-//     </group>
-
-//   )
-// }
 
 
 
@@ -79,14 +55,19 @@ export default function App() {
   const [view, setView] = useState("country")
   const [zooming, setZooming] = useState(false)
 
+
+  /* open github city */
+
   const enterGithub = () => {
     setZooming(true)
   }
+
 
   const finishZoom = () => {
     setZooming(false)
     setView("github")
   }
+
 
   return (
 
@@ -111,10 +92,6 @@ export default function App() {
         fade
       />
 
-      {/* moon
-
-      <Moon /> */}
-
 
       {/* horizon glow */}
 
@@ -128,13 +105,9 @@ export default function App() {
       </mesh>
 
 
-      {/* night ambient */}
+      {/* lighting */}
 
       <ambientLight intensity={0.5} />
-
-
-      {/* city fill */}
-
       <pointLight position={[-20,15,-20]} intensity={0.6} />
 
 
@@ -151,11 +124,19 @@ export default function App() {
       <CameraController
         zoomTarget={zooming}
         onZoomComplete={finishZoom}
+        view={view}
+        setView={setView}
       />
 
 
+      {/* VIEWS */}
+
       {view === "country" && (
-        <CountryView enterGithub={enterGithub}/>
+        <CountryView setView={setView}/>
+      )}
+
+      {view === "forge" && (
+        <ForgeView enterGithub={enterGithub}/>
       )}
 
       {view === "github" && (
