@@ -1,49 +1,51 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
+import * as THREE from "three"
 import Building from "./Building"
 import Tree from "./Tree"
 import GrassField from "./GrassField"
 import Car from "./Car"
 
 
+
 function Road({ position, width, depth }) {
 
-  const dashes = []
+  const dashRef = useRef()
 
   const dashLength = 3
   const gap = 4
   const thickness = 0.18
 
   const isVertical = width === 1
-  const isHorizontal = depth === 1
-
   const length = isVertical ? depth : width
 
   const count = Math.floor(length / (dashLength + gap))
 
-  for (let i = 0; i < count; i++) {
+  useEffect(() => {
 
-    const offset = i * (dashLength + gap) - length / 2
+    if (!dashRef.current) return
 
-    dashes.push(
-      <mesh
-        key={i}
-        position={
-          isVertical
-            ? [0, 0.06, offset]
-            : [offset, 0.06, 0]
-        }
-      >
-        <boxGeometry
-          args={
-            isVertical
-              ? [thickness, 0.02, dashLength]
-              : [dashLength, 0.02, thickness]
-          }
-        />
-        <meshBasicMaterial color="white"/>
-      </mesh>
-    )
-  }
+    const dummy = new THREE.Object3D()
+
+    for (let i = 0; i < count; i++) {
+
+      const offset = i * (dashLength + gap) - length / 2
+
+      if (isVertical) {
+        dummy.position.set(0, 0.06, offset)
+      } else {
+        dummy.position.set(offset, 0.06, 0)
+      }
+
+      dummy.updateMatrix()
+      dashRef.current.setMatrixAt(i, dummy.matrix)
+
+    }
+
+    dashRef.current.instanceMatrix.needsUpdate = true
+
+  }, [count, isVertical, length])
+
+
 
   return (
     <group position={position}>
@@ -54,8 +56,18 @@ function Road({ position, width, depth }) {
         <meshStandardMaterial color="#111111"/>
       </mesh>
 
-      {/* center dashed line */}
-      {dashes}
+      {/* dashed center line (instanced) */}
+
+      <instancedMesh ref={dashRef} args={[null,null,count]}>
+        <boxGeometry
+          args={
+            isVertical
+              ? [thickness,0.02,dashLength]
+              : [dashLength,0.02,thickness]
+          }
+        />
+        <meshBasicMaterial color="white"/>
+      </instancedMesh>
 
       {/* edge borders */}
 
@@ -73,7 +85,7 @@ function Road({ position, width, depth }) {
         </>
       )}
 
-      {isHorizontal && (
+      {!isVertical && (
         <>
           <mesh position={[0,0.06,-0.45]}>
             <boxGeometry args={[width,0.02,0.12]} />
@@ -92,17 +104,17 @@ function Road({ position, width, depth }) {
 }
 
 
+
 function StreetLight({ position }) {
+
   return (
     <group position={position}>
 
-      {/* pole */}
       <mesh position={[0,2,0]}>
         <cylinderGeometry args={[0.07,0.07,4]} />
         <meshStandardMaterial color="#aaaaaa"/>
       </mesh>
 
-      {/* bulb */}
       <mesh position={[0,4,0]}>
         <sphereGeometry args={[0.25]} />
         <meshStandardMaterial
@@ -111,7 +123,6 @@ function StreetLight({ position }) {
         />
       </mesh>
 
-      {/* light */}
       <pointLight
         position={[0,4,0]}
         intensity={7}
@@ -122,6 +133,7 @@ function StreetLight({ position }) {
     </group>
   )
 }
+
 
 
 export default function GithubCity() {
@@ -138,6 +150,8 @@ export default function GithubCity() {
 
   }, [])
 
+
+
   const gridSize = 4
   const spacing = 10
   const blockOffset = spacing / 2
@@ -145,6 +159,8 @@ export default function GithubCity() {
   const roads = []
   const lights = []
   const trees = []
+
+
 
   /* Roads */
 
@@ -167,7 +183,9 @@ export default function GithubCity() {
         depth={1}
       />
     )
+
   }
+
 
 
   /* Street lights */
@@ -191,8 +209,10 @@ export default function GithubCity() {
           position={[baseX - 2.5, 0, baseZ - 2.5]}
         />
       )
+
     }
   }
+
 
 
   /* Trees */
@@ -213,6 +233,7 @@ export default function GithubCity() {
   }
 
 
+
   return (
     <>
 
@@ -222,27 +243,20 @@ export default function GithubCity() {
         <meshStandardMaterial color="#0b1f0b"/>
       </mesh>
 
-      {/* grass */}
       <GrassField/>
 
-      {/* roads */}
       {roads}
 
-      {/* cars */}
-      <Car start={[-40,0.2,0]} />
-      <Car start={[40,0.2,0]} />
-      <Car start={[0,0.2,-40]} />
-      <Car start={[0,0.2,40]} />
-      <Car start={[20,0.2,-30]} />
-      <Car start={[-25,0.2,30]} />
+      <Car/>
+      <Car/>
+      <Car/>
+      <Car/>
+      <Car/>
+      <Car/>
 
-      {/* lights */}
       {lights}
 
-      {/* trees */}
       {trees}
-
-      {/* buildings */}
 
       {repos.map((repo, index) => {
 
