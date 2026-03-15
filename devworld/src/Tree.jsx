@@ -1,89 +1,60 @@
-import { useRef } from "react"
-import { useFrame } from "@react-three/fiber"
+import { useRef, useMemo, useEffect } from "react"
+import * as THREE from "three"
 
-export default function Tree({ position }) {
+export default function Tree({ count = 80, area = 200 }) {
 
-  const ref = useRef()
+  const trunkRef = useRef()
+  const leafRef = useRef()
 
-  const type = Math.floor(Math.random()*3)
+  const dummy = useMemo(() => new THREE.Object3D(), [])
 
-  const scale = 0.6 + Math.random()*0.5
+  useEffect(() => {
 
-  useFrame(({clock})=>{
-    if(ref.current){
-      ref.current.rotation.z =
-        Math.sin(clock.elapsedTime*0.4 + position[0]) * 0.015
+    for (let i = 0; i < count; i++) {
+
+      const x = (Math.random() - 0.5) * area
+      const z = (Math.random() - 0.5) * area
+      const scale = 0.7 + Math.random() * 0.6
+
+      /* trunk */
+
+      dummy.position.set(x, 1, z)
+      dummy.scale.set(scale, scale, scale)
+      dummy.updateMatrix()
+
+      trunkRef.current.setMatrixAt(i, dummy.matrix)
+
+      /* leaves */
+
+      dummy.position.set(x, 2.6 * scale, z)
+      dummy.scale.set(scale, scale, scale)
+      dummy.updateMatrix()
+
+      leafRef.current.setMatrixAt(i, dummy.matrix)
+
     }
-  })
 
-  /* Coconut tree */
+    trunkRef.current.instanceMatrix.needsUpdate = true
+    leafRef.current.instanceMatrix.needsUpdate = true
 
-  if(type === 2){
-    return (
-      <group position={position} scale={scale} ref={ref}>
-
-        {/* trunk */}
-        <mesh position={[0,2,0]}>
-          <cylinderGeometry args={[0.12,0.18,4,6]} />
-          <meshStandardMaterial color="#6b4f2a"/>
-        </mesh>
-
-        {/* leaves */}
-
-        {Array.from({length:5}).map((_,i)=>(
-          <mesh
-            key={i}
-            position={[0,4,0]}
-            rotation={[0,(i*Math.PI)/2.5,0.5]}
-          >
-            <coneGeometry args={[1.6,1.6,5]} />
-            <meshStandardMaterial color="#2e7d32"/>
-          </mesh>
-        ))}
-
-      </group>
-    )
-  }
-
-  /* Bushy tree */
-
-  if(type === 1){
-    return (
-      <group position={position} scale={scale} ref={ref}>
-
-        <mesh position={[0,1,0]}>
-          <cylinderGeometry args={[0.15,0.2,2]} />
-          <meshStandardMaterial color="#5b3a29"/>
-        </mesh>
-
-        <mesh position={[0,2.5,0]}>
-          <sphereGeometry args={[1.2,10,10]} />
-          <meshStandardMaterial color="#2e7d32"/>
-        </mesh>
-
-        <mesh position={[0.5,2.7,0]}>
-          <sphereGeometry args={[0.8,8,8]} />
-          <meshStandardMaterial color="#388e3c"/>
-        </mesh>
-
-      </group>
-    )
-  }
-
-  /* Street tree */
+  }, [count, area, dummy])
 
   return (
-    <group position={position} scale={scale} ref={ref}>
+    <group>
 
-      <mesh position={[0,1,0]}>
-        <cylinderGeometry args={[0.15,0.2,2]} />
+      {/* trunks */}
+
+      <instancedMesh ref={trunkRef} args={[null, null, count]}>
+        <cylinderGeometry args={[0.15,0.2,2,6]} />
         <meshStandardMaterial color="#5b3a29"/>
-      </mesh>
+      </instancedMesh>
 
-      <mesh position={[0,2.6,0]}>
-        <sphereGeometry args={[1,10,10]} />
+      {/* leaves */}
+
+      <instancedMesh ref={leafRef} args={[null, null, count]}>
+        <sphereGeometry args={[1,8,8]} />
         <meshStandardMaterial color="#2e7d32"/>
-      </mesh>
+      </instancedMesh>
 
     </group>
   )
