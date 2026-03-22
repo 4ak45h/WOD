@@ -144,7 +144,7 @@ export default function GithubCity() {
 
     const username = "4AK45H"
 
-    fetch(`https://api.github.com/users/${username}/repos`)
+    fetch(`http://localhost:5000/api/github/${username}`)
       .then(res => res.json())
       .then(data => setRepos(data))
 
